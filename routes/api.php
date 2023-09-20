@@ -5,6 +5,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ApiController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +22,12 @@ Route::post('register',[AuthController::class,'register']);
 Route::post('login',[AuthController::class,'login']);
 
 
-Route::middleware('jwt.verify')->group(function(){
+Route::middleware(['jwt.verify','admin'])->group(function(){
     Route::get('users',[UserController::class,'index']);
+    Route::put('users/{user}',[UserController::class,'update']);
+    Route::delete('users/{user}', [UserController::class, 'destroy']);
+});
+
+Route::middleware(['jwt.verify'])->group(function(){
+    Route::post('orders',[OrderController::class,'store']);
 });

@@ -19,9 +19,18 @@ class User extends Authenticatable implements JWTSubject
      * @var array<int, string>
      */
     protected $fillable = [
+        'id',
         'name',
         'email',
         'password',
+        'admin',
+        'token',
+        'emailPay',
+        'street',
+        'state',
+        'zipcode',
+        'phone',
+        'cuit',
     ];
 
     /**
@@ -42,6 +51,7 @@ class User extends Authenticatable implements JWTSubject
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'admin' => 'boolean',
     ];
 
     public function getJWTIdentifier(){

@@ -33,16 +33,16 @@ public function register(Request $request){
         ]);
 
         $token = JWTAuth::fromUser($user);
+        $user->update(['token'=>$token]);
 
 
         return response()->json([
             'message' => 'Usuario registrado con éxito',
             'user' => $user,
-            'token'=> $token
         ], 200);
      }
 
-     public function login(LoginRequest $request){
+public function login(LoginRequest $request){
         $credencials = $request->only('email','password');
         try {
             if(!$token = JWTAuth::attempt($credencials)) {

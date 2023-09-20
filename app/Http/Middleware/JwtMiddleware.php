@@ -24,12 +24,12 @@ class JwtMiddleware
             JWTAuth::parseToken()->authenticate();
         } catch (Exception $e) {
             if($e instanceof TokenInvalidException){
-                return response()->json(['status'=>'invalid token'],400);
+                return response()->json(['status'=>'Invalid token'],400);
             }
             if($e instanceof TokenExpiredException){
-                return response()->json(['status'=>'expired token'],400);
+                return response()->json(['status'=>'Expired token'],400);
             }
-            return response()->json(['status'=>'token not fount'],400);
+            return response()->json(['status'=>'Token not found'],400);
         }
         return $next($request);
     }
