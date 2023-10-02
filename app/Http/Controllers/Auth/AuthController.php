@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\EmailController;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -14,7 +15,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
-public function register(Request $request){
+    public function register(Request $request)
+    {
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|min:4',
@@ -35,27 +37,37 @@ public function register(Request $request){
         $token = JWTAuth::fromUser($user);
         $user->update(['token'=>$token]);
 
+        app(EmailController::class)->store($user->email);
 
         return response()->json([
             'message' => 'Usuario registrado con éxito',
             'user' => $user,
         ], 200);
-     }
-
-public function login(LoginRequest $request){
+    }
+    public function login(LoginRequest $request)
+    {
         $credencials = $request->only('email','password');
         try {
             if(!$token = JWTAuth::attempt($credencials)) {
                 return response()->json([
-                    'error'=>'invalid credentials '
+                    'error'=>'Credenciales invalidas'
                 ],400);
             }
+
+            $user = JWTAuth::user();
+
+            if(!$user->verified){
+                return response()->json([
+                    'error' => 'Usuario no verificado. Por favor, verifica tu correo electrónico o contáctanos.'
+                ], 403);
+            }
+        
         } catch(JWTException $e) {
          return response()->json([
-            'error' => 'not create token'
+            'error' => 'No se pudo crear el token'
          ], 500);   
         }
 
         return response()->json(compact('token'));
-     }                      
+    }                      
 }
